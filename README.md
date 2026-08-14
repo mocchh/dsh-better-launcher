@@ -1,53 +1,62 @@
 # dsh-better-launcher
 
-DeepSeek Harness 的 `dsh start / stop / status` 一键服务管理命令,以 npm 包形式分发。
+DeepSeek Harness 的 `dsh start / stop / status` 一键服务管理命令。
 
-仓库:https://github.com/mocchh/dsh-better-launcher
+仓库：https://github.com/mocchh/dsh-better-launcher
 
-## 一键安装(推荐)
+官方 `@deepseek-ai/dsh` 只有前台 `dsh web`。本包装层占用全局命令 `dsh`，补上后台生命周期，其余参数原样转发给官方 CLI。
+
+要求：Node.js `^22.19.0 || >=24.0.0`（与官方 harness 一致；不含 Node 23）。安装时会带入 `@deepseek-ai/dsh`，无需源码 checkout、无需 pnpm。
+
+## 安装
+
+本包尚未发布到 npm 注册表，请从 GitHub 安装。
 
 ```sh
-# Windows(PowerShell)
+# Windows (PowerShell)
 irm https://raw.githubusercontent.com/mocchh/dsh-better-launcher/main/install.ps1 | iex
 
 # macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/mocchh/dsh-better-launcher/main/install.sh | sh
+
+# 等价手动安装
+npm install -g mocchh/dsh-better-launcher
+npm install -g mocchh/dsh-better-launcher#v1.0.1
 ```
 
-安装脚本会检查 Node.js ≥ 18、下载包并执行 `npm install -g`。可通过环境变量覆盖(镜像/内网):
+可通过环境变量覆盖：
 
 | 变量 | 作用 |
 |---|---|
-| `DSH_LAUNCHER_VERSION` | 指定版本,默认 `1.0.0` |
-| `DSH_LAUNCHER_BASE` | tarball 下载基地址,默认 GitHub raw |
+| `DSH_LAUNCHER_VERSION` | git ref（tag / branch / sha），默认仓库默认分支 |
+| `DSH_LAUNCHER_REPO` | GitHub 仓库，默认 `mocchh/dsh-better-launcher` |
+| `DSH_LAUNCHER_BASE` | 内网 tarball 基地址；设置后改为下载 `dsh-better-launcher-<ver>.tgz` |
+| `DSH_LAUNCHER_SHA256` | 使用 `DSH_LAUNCHER_BASE` 时**必须**提供，用于校验 tarball |
 
-## 手动安装
-
-```sh
-# 从 GitHub raw 下载 tarball 安装(离线/内网)
-npm install -g https://raw.githubusercontent.com/mocchh/dsh-better-launcher/main/dsh-better-launcher-1.0.0.tgz
-
-# 从 npm 注册表安装
-npm install -g dsh-better-launcher
-```
-
-要求:Node.js ≥ 18。安装时会自动带入官方 `@deepseek-ai/dsh` CLI(harness 运行时),无需源码 checkout、无需 pnpm。
+不要用 `npm install -g dsh-better-launcher`：该名字目前不在 npm 注册表上。
 
 ## 用法
 
 | 命令 | 作用 |
 |---|---|
-| `dsh start [--port 8080] [--open] [其他 web 参数]` | 后台启动 Web UI,等待端口就绪后打印 `http://127.0.0.1:3080`;`--open` 自动打开浏览器 |
-| `dsh stop` | 按 pidfile 关闭实例;非 `dsh start` 启动的实例会拒绝误杀,需 `dsh stop --force` |
+| `dsh start [--port 8080\|--port=8080] [--open] [其他 web 参数]` | 后台启动 Web UI，探测实际监听端口后打印 `http://127.0.0.1:<port>`；`--open` 打开浏览器 |
+| `dsh stop [--force] [--port 8080]` | 按 pidfile 关闭；先 SIGTERM（Windows 同样先发 SIGTERM），再强制结束。无 pidfile 时拒绝误杀，需 `--force`（Unix / Windows 均可按端口找属主） |
 | `dsh status` | 显示运行状态、PID、启动时间、URL 和最近日志 |
-| `dsh <其他>` | 原样转发给真正的 dsh CLI(如 `dsh web`、`dsh --profile tui ...`) |
+| `dsh --version` / `dsh -V` | 包装层版本、当前 Node、解析到的 CLI 路径 |
+| `dsh -- --help` | 官方 launcher 帮助（profiles / plugin） |
+| `dsh web --help` | 官方 web 帮助（`--host` / `--port` / `--trusted-host`） |
+| `dsh <其他>` | 原样转发给真正的 dsh CLI |
 
-状态与日志:`<DSH_HOME|~/.dsh>/run/` 下的 `web.pid`、`web.log`、`web.err.log`。
+`dsh --help` 只打印本包装层帮助。官方帮助请用上面两行。
 
-## 定位真正的 dsh CLI(按优先级)
+状态与日志：`<DSH_HOME>`（空白视为未设置；支持 `~/` 展开，默认 `~/.dsh`）下的 `run/web.pid`、`web.log`、`web.err.log`。
 
-1. 环境变量 `DSH_CLI`(CLI 入口路径),可选 `DSH_NODE_ARGS`(空格分隔的 node 参数)与 `DSH_CWD`;
-2. `<DSH_HOME>/dsh-launcher.json`:
+`--port 0` 交给官方让 OS 分配端口；启动成功后会把真实端口写入 pidfile。用户在 `cordis.patch.yml` 里改过端口、命令行没带 `--port` 时，同样按进程实际监听端口记录。
+
+## 定位真正的 dsh CLI（按优先级）
+
+1. 环境变量 `DSH_CLI`（CLI 入口路径），可选 `DSH_NODE_ARGS`（空格分隔的 node 参数）与 `DSH_CWD`；
+2. `<DSH_HOME>/dsh-launcher.json`：
 
    ```json
    {
@@ -57,19 +66,20 @@ npm install -g dsh-better-launcher
    }
    ```
 
-   指向源码 checkout 时用它(等价于 `pnpm dsh web`);
-3. 自动使用内置依赖 `@deepseek-ai/dsh/lib/bin.js`(npm 安装的 harness,默认即可用)。
+   指向源码 checkout 时用它（等价于 `pnpm dsh web`）；
+3. 自动使用内置依赖 `@deepseek-ai/dsh/lib/bin.js`（npm 安装的 harness，默认即可用）。
 
 删除 `dsh-launcher.json` 即可切回内置 npm 版 CLI。
 
-## 发布到 npm
-
-```sh
-npm login
-npm publish   # 发布前可修改 package.json 中的 name(如改为自己的 scope)
-```
-
 ## 提示
 
-- 若机器上已存在同名 `dsh` 命令(如旧版 dsh.cmd),以 PATH 顺序靠前者为准;删除旧文件后 npm 全局目录(通常为 `%APPDATA%\npm`)中的新 `dsh` 即生效。
-- Windows 的 `dsh stop --force` 通过 `netstat` + `taskkill /T /F` 关闭非本工具启动的实例,请确认端口归属后再执行。
+- 本工具的全局命令名是 `dsh`。若 PATH 里已有官方或旧版 `dsh`，以靠前者为准；删掉旧 shim 后，npm 全局目录（Windows 通常为 `%APPDATA%\npm`）中的新 `dsh` 即生效。
+- `dsh stop --force` 会按端口属主结束非本工具启动的实例。请确认端口归属后再执行。
+- pidfile 会记录 pid、端口、启动时间和 CLI 路径。`stop` 会核对命令行，避免 PID 复用后误杀无关进程。
+- 日志超过约 5MB 时，下次 `dsh start` 会把旧文件轮转到 `web.log.1` / `web.err.log.1`。
+
+## 开发
+
+```sh
+npm test
+```

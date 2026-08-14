@@ -1,6 +1,6 @@
 {
   "name": "dsh-better-launcher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "dsh start / stop / status — one-command lifecycle manager for DeepSeek Harness",
   "license": "MIT",
   "type": "commonjs",
@@ -15,11 +15,15 @@
   "bin": {
     "dsh": "bin/dsh.js"
   },
+  "scripts": {
+    "test": "node --test --test-force-exit test/home.test.js test/node-version.test.js test/parse.test.js test/state.test.js test/config.test.js test/cli.test.js test/lifecycle.e2e.test.js"
+  },
   "engines": {
-    "node": ">=18"
+    "node": "^22.19.0 || >=24.0.0"
   },
   "files": [
     "bin",
+    "lib",
     "README.md",
     "LICENSE"
   ],

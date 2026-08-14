@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [22, 24]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+      - name: Enforce harness engines
+        run: node -e "const v=process.versions.node.split('.').map(Number); if(!(v[0]>=24||(v[0]===22&&v[1]>=19))) { console.error(process.versions.node); process.exit(1) }"
+      - run: npm install
+      - run: npm test
