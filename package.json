@@ -1,0 +1,38 @@
+{
+  "name": "dsh-better-launcher",
+  "version": "1.0.0",
+  "description": "dsh start / stop / status — one-command lifecycle manager for DeepSeek Harness",
+  "license": "MIT",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mocchh/dsh-better-launcher.git"
+  },
+  "homepage": "https://github.com/mocchh/dsh-better-launcher#readme",
+  "bugs": {
+    "url": "https://github.com/mocchh/dsh-better-launcher/issues"
+  },
+  "bin": {
+    "dsh": "bin/dsh.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek",
+    "harness",
+    "service",
+    "start",
+    "stop",
+    "status"
+  ],
+  "dependencies": {
+    "@deepseek-ai/dsh": "^0.1.0-rc.6"
+  }
+}
