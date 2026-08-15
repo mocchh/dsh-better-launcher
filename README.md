@@ -10,8 +10,6 @@ DeepSeek Harness 的 `dsh start / stop / status` 一键服务管理命令。
 
 ## 安装
 
-本包尚未发布到 npm 注册表，请从 GitHub 安装。
-
 ```sh
 # Windows (PowerShell)
 irm https://raw.githubusercontent.com/mocchh/dsh-better-launcher/main/install.ps1 | iex
@@ -77,9 +75,3 @@ npm install -g mocchh/dsh-better-launcher#v1.0.1
 - `dsh stop --force` 会按端口属主结束非本工具启动的实例。请确认端口归属后再执行。
 - pidfile 会记录 pid、端口、启动时间和 CLI 路径。`stop` 会核对命令行，避免 PID 复用后误杀无关进程。
 - 日志超过约 5MB 时，下次 `dsh start` 会把旧文件轮转到 `web.log.1` / `web.err.log.1`。
-
-## 开发
-
-```sh
-npm test
-```
