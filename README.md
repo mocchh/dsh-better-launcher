@@ -16,7 +16,7 @@ irm https://raw.githubusercontent.com/mocchh/dsh-better-launcher/main/install.ps
 
 # macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/mocchh/dsh-better-launcher/main/install.sh | sh
-
+```
 可通过环境变量覆盖：
 
 | 变量 | 作用 |
