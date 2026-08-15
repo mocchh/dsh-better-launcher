@@ -6,7 +6,7 @@ DeepSeek Harness 的 `dsh start / stop / status` 一键服务管理命令。
 
 官方 `@deepseek-ai/dsh` 只有前台 `dsh web`。本包装层占用全局命令 `dsh`，补上后台生命周期，其余参数原样转发给官方 CLI。
 
-要求：Node.js `^22.19.0 || >=24.0.0`（与官方 harness 一致；不含 Node 23）。安装时会带入 `@deepseek-ai/dsh`，无需源码 checkout、无需 pnpm。
+要求：Node.js `^22.19.0 || >=24.0.0`
 
 ## 安装
 
@@ -17,11 +17,6 @@ irm https://raw.githubusercontent.com/mocchh/dsh-better-launcher/main/install.ps
 # macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/mocchh/dsh-better-launcher/main/install.sh | sh
 
-# 等价手动安装
-npm install -g mocchh/dsh-better-launcher
-npm install -g mocchh/dsh-better-launcher#v1.0.1
-```
-
 可通过环境变量覆盖：
 
 | 变量 | 作用 |
@@ -31,7 +26,6 @@ npm install -g mocchh/dsh-better-launcher#v1.0.1
 | `DSH_LAUNCHER_BASE` | 内网 tarball 基地址；设置后改为下载 `dsh-better-launcher-<ver>.tgz` |
 | `DSH_LAUNCHER_SHA256` | 使用 `DSH_LAUNCHER_BASE` 时**必须**提供，用于校验 tarball |
 
-不要用 `npm install -g dsh-better-launcher`：该名字目前不在 npm 注册表上。
 
 ## 用法
 
