@@ -1,5 +1,7 @@
 # dsh-better-launcher
 
+[English](README.en.md)
+
 DeepSeek Harness 的 `dsh start / stop / status` 一键服务管理命令。
 
 仓库：https://github.com/mocchh/dsh-better-launcher
